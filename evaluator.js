@@ -1,4 +1,4 @@
-// public/evaluator.js
+import { ENDPOINT } from "./config.js";
 
 async function fetchDisciplineStructure(disciplineId, token) {
   const infoUrl = `https://dev.my.itmo.su/api/constructor/disciplines/${disciplineId}/info`;
@@ -6,6 +6,15 @@ async function fetchDisciplineStructure(disciplineId, token) {
     headers: { Authorization: `Bearer ${token}` },
   });
   const infoData = await infoRes.json();
+
+  if (
+    !infoData.result ||
+    !infoData.result.contents ||
+    infoData.result.contents.length === 0
+  ) {
+    throw new Error("Не удалось получить содержание дисциплины");
+  }
+
   const contentId = infoData.result.contents[0].id;
 
   const chaptersUrl = `https://dev.my.itmo.su/api/constructor/programs/${disciplineId}/contents/${contentId}/chapters`;
@@ -13,6 +22,10 @@ async function fetchDisciplineStructure(disciplineId, token) {
     headers: { Authorization: `Bearer ${token}` },
   });
   const chaptersData = await chaptersRes.json();
+
+  if (!chaptersData.result || !chaptersData.result.chapters) {
+    throw new Error("Не удалось получить главы дисциплины");
+  }
 
   const structure = chaptersData.result.chapters
     .map((chapter, index) => {
@@ -25,21 +38,23 @@ async function fetchDisciplineStructure(disciplineId, token) {
   return structure;
 }
 
-async function evaluateDiscipline({ disciplineId, referenceText }) {
-  const token = localStorage.getItem("auth._token.itmoId");
-  if (!token) return alert("Token not found");
-
+async function evaluateDiscipline({ disciplineId, referenceText, token }) {
   const courseText = await fetchDisciplineStructure(disciplineId, token);
   const body = { course_text: courseText };
   if (referenceText) body.reference_text = referenceText;
 
-  const response = await fetch("http://localhost:8000/evaluate", {
+  const response = await fetch(`${ENDPOINT}/evaluate`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
   });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Ошибка API: ${response.status}\n${text}`);
+  }
 
   const result = await response.json();
   return result;

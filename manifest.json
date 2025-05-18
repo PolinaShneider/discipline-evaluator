@@ -1,13 +1,18 @@
 {
-    "manifest_version": 3,
-    "name": "ITMO Discipline Evaluator",
-    "version": "1.0",
-    "description": "Оценивает структуру дисциплины через API",
-    "permissions": ["storage", "scripting", "activeTab"],
-    "host_permissions": ["https://dev.my.itmo.su/*"],
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": "icons/icon.png"
+  "manifest_version": 3,
+  "name": "ITMO Discipline Evaluator",
+  "version": "1.0",
+  "description": "Оценивает структуру дисциплины через API",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": ["https://dev.my.itmo.su/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icons/icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://dev.my.itmo.su/*"],
+      "js": ["content.js"]
     }
-  }
-  
+  ]
+}

@@ -51,3 +51,7 @@ pre {
     overflow-y: auto;
     border-radius: 4px;
 }
+
+ul li:not(:last-child) {
+    margin-bottom: 5px;
+}
