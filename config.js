@@ -1,1 +1,1 @@
-export const ENDPOINT = "https://metrics.polinashneider.space";
+export const ENDPOINT = "https://metrics.polinashneider.space/api";
