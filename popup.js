@@ -1,4 +1,42 @@
 import { ENDPOINT } from "./config.js";
+import { parseJwt } from "./utils.js";
+import { trackEvaluationEvent } from "./analytics.js";
+
+const DEFAULT_THRESHOLDS = {
+  semantic_coherence: 0.5,
+  structural_balance: 0.6,
+  topic_flow: 0.3,
+  sequence_coverage: 0.6,
+  graph_coverage: 0.6,
+  redundancy: 0.4,
+  relevance: 0.5,
+  extra_topics_penalty: 0.4,
+  final_score: 0.6,
+};
+
+function getMetricClass(key, value) {
+  const threshold = DEFAULT_THRESHOLDS[key] ?? 0.5;
+
+  if (key === "redundancy" || key === "extra_topics_penalty") {
+    // Для них меньше — лучше
+    if (value <= threshold / 2) return "metric-good";
+    if (value <= threshold) return "metric-warning";
+    return "metric-bad";
+  } else {
+    // Для остальных — больше — лучше
+    if (value >= threshold + 0.1) return "metric-good";
+    if (value >= threshold) return "metric-warning";
+    return "metric-bad";
+  }
+}
+
+function getISUFromCookie(rawToken) {
+  if (!rawToken) return null;
+
+  const decodedToken = parseJwt(decodeURIComponent(rawToken));
+
+  return decodedToken?.isu?.toString() || null;
+}
 
 function getDisciplineIdFromUrl(tabUrl) {
   const match = tabUrl.match(/\/programs\/(\d+)/);
@@ -6,7 +44,7 @@ function getDisciplineIdFromUrl(tabUrl) {
 }
 
 function isItmoProgramsPage(tabUrl) {
-  return tabUrl.includes("my.itmo.su") && tabUrl.includes("/programs/");
+  return /my\.itmo\.(ru|su)/.test(tabUrl) && /programs\/\d+/.test(tabUrl);
 }
 
 function getCurrentTab(callback) {
@@ -54,6 +92,20 @@ document.addEventListener("DOMContentLoaded", () => {
   function validateInputs(tabUrl, resetResults = false) {
     const token = tokenInput.value.trim();
     const onItmoPage = isItmoProgramsPage(tabUrl);
+
+    const userIdEl = document.getElementById("userIdValue");
+
+    try {
+      const isu = getISUFromCookie(token);
+      if (isu) {
+        userIdEl.textContent = isu;
+      } else {
+        userIdEl.textContent = "неизвестен";
+      }
+    } catch (e) {
+      userIdEl.textContent = "ошибка";
+      console.error("Ошибка при извлечении ISU:", e);
+    }
 
     const errors = [];
     if (!onItmoPage) {
@@ -122,6 +174,13 @@ document.addEventListener("DOMContentLoaded", () => {
         output.textContent = "";
         output.style.display = "none";
 
+        await trackEvaluationEvent({
+          token,
+          disciplineId: id,
+          referenceId: referenceId || null,
+          metrics: result,
+        });
+
         const metrics = referenceProvided
           ? [
               "final_score",
@@ -149,9 +208,13 @@ document.addEventListener("DOMContentLoaded", () => {
           .map((key) => {
             const value = result[key];
             if (value === null || value === undefined) return "";
-            return `<tr><td style="padding: 4px;">${key}</td><td style="padding: 4px;">${value.toFixed(
+            const cssClass = getMetricClass(key, value);
+            return `<tr>
+                <td style="padding: 4px;">${key}</td>
+                <td style="padding: 4px; text-align: center;" class="${cssClass}">${value.toFixed(
               3
-            )}</td></tr>`;
+            )}</td>
+              </tr>`;
           })
           .join("");
 

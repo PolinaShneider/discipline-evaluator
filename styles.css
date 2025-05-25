@@ -55,3 +55,21 @@ pre {
 ul li:not(:last-child) {
     margin-bottom: 5px;
 }
+
+.metric-good {
+    background-color: #d4edda;
+    color: #155724;
+    font-weight: bold;
+}
+
+.metric-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    font-weight: bold;
+}
+
+.metric-bad {
+    background-color: #f8d7da;
+    color: #721c24;
+    font-weight: bold;
+}

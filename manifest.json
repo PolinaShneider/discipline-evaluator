@@ -4,14 +4,18 @@
   "version": "1.0",
   "description": "Оценивает структуру дисциплины через API",
   "permissions": ["storage", "scripting", "activeTab"],
-  "host_permissions": ["https://dev.my.itmo.su/*"],
+  "host_permissions": [
+    "https://dev.my.itmo.su/*",
+    "https://my.itmo.ru/*",
+    "https://www.google-analytics.com/"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": "icons/icon.png"
   },
   "content_scripts": [
     {
-      "matches": ["https://dev.my.itmo.su/*"],
+      "matches": ["https://dev.my.itmo.su/*", "https://my.itmo.ru/*"],
       "js": ["content.js"]
     }
   ]

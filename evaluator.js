@@ -1,41 +1,61 @@
 import { ENDPOINT } from "./config.js";
+import { getBaseUrl, parseJwt } from "./utils.js";
 
 async function fetchDisciplineStructure(disciplineId, token) {
-  const infoUrl = `https://dev.my.itmo.su/api/constructor/disciplines/${disciplineId}/info`;
-  const infoRes = await fetch(infoUrl, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const baseUrl = getBaseUrl();
+  if (!baseUrl) {
+    throw new Error("❌ Неизвестный домен, не удалось определить baseUrl");
+  }
+
+  const headers = {
+    Authorization: token.startsWith("Bearer ") ? token : `Bearer ${token}`,
+    Accept: "application/json",
+  };
+
+  const infoUrl = `${baseUrl}/api/constructor/disciplines/${disciplineId}/info`;
+  const infoRes = await fetch(infoUrl, { headers, credentials: "include" });
+
+  if (!infoRes.ok) {
+    const text = await infoRes.text();
+    throw new Error(`Ошибка при получении info: ${infoRes.status}\n${text}`);
+  }
+
   const infoData = await infoRes.json();
+  const contentId = infoData?.result?.contents?.[0]?.id;
 
-  if (
-    !infoData.result ||
-    !infoData.result.contents ||
-    infoData.result.contents.length === 0
-  ) {
-    throw new Error("Не удалось получить содержание дисциплины");
+  if (!contentId) {
+    throw new Error("❌ Не удалось получить content_id дисциплины");
   }
 
-  const contentId = infoData.result.contents[0].id;
-
-  const chaptersUrl = `https://dev.my.itmo.su/api/constructor/programs/${disciplineId}/contents/${contentId}/chapters`;
+  const chaptersUrl = `${baseUrl}/api/constructor/programs/${disciplineId}/contents/${contentId}/chapters`;
   const chaptersRes = await fetch(chaptersUrl, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers,
+    credentials: "include",
   });
-  const chaptersData = await chaptersRes.json();
 
-  if (!chaptersData.result || !chaptersData.result.chapters) {
-    throw new Error("Не удалось получить главы дисциплины");
+  if (!chaptersRes.ok) {
+    const text = await chaptersRes.text();
+    throw new Error(
+      `Ошибка при получении chapters: ${chaptersRes.status}\n${text}`
+    );
   }
 
-  const structure = chaptersData.result.chapters
+  const chaptersData = await chaptersRes.json();
+  const chapters = chaptersData?.result?.chapters;
+
+  if (!Array.isArray(chapters) || chapters.length === 0) {
+    throw new Error("❌ Главы (chapters) дисциплины не найдены");
+  }
+
+  return chapters
     .map((chapter, index) => {
       const sectionTitle = `${index + 1}. ${chapter.name}`;
-      const themes = chapter.themes.map((t) => ` - ${t.name}`).join("\n");
+      const themes = (chapter.themes || [])
+        .map((t) => ` - ${t.name}`)
+        .join("\n");
       return `${sectionTitle}\n${themes}`;
     })
     .join("\n\n");
-
-  return structure;
 }
 
 async function evaluateDiscipline({ disciplineId, referenceText, token }) {
@@ -56,8 +76,7 @@ async function evaluateDiscipline({ disciplineId, referenceText, token }) {
     throw new Error(`Ошибка API: ${response.status}\n${text}`);
   }
 
-  const result = await response.json();
-  return result;
+  return await response.json();
 }
 
 export { evaluateDiscipline };

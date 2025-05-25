@@ -2,6 +2,18 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === "fetchCourse") {
     const { disciplineId } = msg;
 
+    const host = location.host;
+    let baseUrl = null;
+
+    if (host.includes("dev.my.itmo.su")) {
+      baseUrl = "https://dev.my.itmo.su";
+    } else if (host.includes("my.itmo.ru")) {
+      baseUrl = "https://my.itmo.ru";
+    } else {
+      sendResponse({ ok: false, error: "❌ Неизвестный домен" });
+      return true;
+    }
+
     // Извлекаем токен из cookie
     const cookieToken = document.cookie
       .split("; ")
@@ -20,14 +32,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     };
 
     // 1. Получаем /info → content_id
-    fetch(
-      `https://dev.my.itmo.su/api/constructor/disciplines/${disciplineId}/info`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers,
-      }
-    )
+    fetch(`${baseUrl}/api/constructor/disciplines/${disciplineId}/info`, {
+      method: "GET",
+      credentials: "include",
+      headers,
+    })
       .then((res) => {
         if (!res.ok) throw new Error(`Ошибка /info: ${res.status}`);
         return res.json();
@@ -40,7 +49,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
         // 2. Получаем /chapters
         return fetch(
-          `https://dev.my.itmo.su/api/constructor/programs/${disciplineId}/contents/${contentId}/chapters`,
+          `${baseUrl}/api/constructor/programs/${disciplineId}/contents/${contentId}/chapters`,
           {
             method: "GET",
             credentials: "include",
@@ -70,7 +79,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
         sendResponse({ ok: true, courseText });
       })
-      .catch((err) => sendResponse({ ok: false, error: err.message }));
+      .catch((err) => {
+        sendResponse({ ok: false, error: err.message });
+      });
 
     return true; // async response
   }
