@@ -215,19 +215,50 @@ document.addEventListener("DOMContentLoaded", () => {
               "redundancy",
             ];
 
-        metricsTable.innerHTML = metrics
-          .map((key) => {
-            const value = result[key];
-            if (value === null || value === undefined) return "";
-            const cssClass = getMetricClass(key, value);
-            return `<tr>
-                <td style="padding: 4px;">${key}</td>
-                <td style="padding: 4px; text-align: center;" class="${cssClass}">${value.toFixed(
-              3
-            )}</td>
-              </tr>`;
-          })
+        // Распределяем метрики: финальный, агрегирующие (_score), точечные
+        const scoreMetrics = [];
+        const otherMetrics = [];
+
+        if (metrics.includes("final_score")) {
+          scoreMetrics.push("final_score");
+        }
+
+        for (const key of metrics) {
+          if (key === "final_score") continue;
+          if (key.endsWith("_score")) {
+            scoreMetrics.push(key);
+          } else {
+            otherMetrics.push(key);
+          }
+        }
+
+        // Функция генерации строки
+        function renderMetricRow(key, value) {
+          const cssClass = getMetricClass(key, value);
+          return `<tr>
+    <td style="padding: 4px;">${key}</td>
+    <td style="padding: 4px; text-align: center;" class="${cssClass}">${value.toFixed(
+            3
+          )}</td>
+  </tr>`;
+        }
+
+        const scoreRows = scoreMetrics
+          .map((key) =>
+            result[key] != null ? renderMetricRow(key, result[key]) : ""
+          )
           .join("");
+
+        const dividerRow = `<tr><td colspan="2"><hr style="border: none; border-top: 1px solid #ccc; margin: 6px 0;" /></td></tr>`;
+
+        const otherRows = otherMetrics
+          .map((key) =>
+            result[key] != null ? renderMetricRow(key, result[key]) : ""
+          )
+          .join("");
+
+        metricsTable.innerHTML =
+          scoreRows + (otherRows ? dividerRow + otherRows : "");
 
         adviceList.innerHTML = result.advice
           .map((a) => `<li>${a}</li>`)
