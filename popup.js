@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", () => {
       errors.push(`Вы не находитесь на нужной странице. Сейчас: ${tabUrl}`);
     }
     if (!token) {
-      errors.push("Введите токен (auth._token.itmoId без Bearer)");
+      errors.push("Введите токен (auth._id_token.itmoId)");
     }
 
     evaluateBtn.disabled = errors.length > 0;
