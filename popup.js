@@ -84,8 +84,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const adviceList = document.getElementById("adviceList");
 
   chrome.storage.local.get(["itmoToken"], (res) => {
-    if (res.itmoToken && !tokenInput.value) {
-      tokenInput.value = res.itmoToken;
+    if (res.itmoToken && !tokenInput.value.trim()) {
+      try {
+        const cleaned = decodeURIComponent(
+          res.itmoToken
+            .trim()
+            .replace(/^Bearer\s+/i, "")
+            .replace(/[\r\n]+/g, "")
+        );
+        tokenInput.value = cleaned;
+        getCurrentTab((tab) => validateInputs(tab?.url || ""));
+      } catch (e) {
+        console.warn("❌ Ошибка при расшифровке токена из storage:", e);
+      }
     }
   });
 
