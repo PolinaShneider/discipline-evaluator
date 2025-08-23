@@ -614,8 +614,37 @@ ${summary.apiSummary}
         `${balancingStatus}\n\n` +
           `📚 Создано разделов: ${creationResults.length}\n` +
           `${balancingDetails}\n\n` +
-          `📋 Сгенерированная структура:\n\n${structure}`
+          `📋 Сгенерированная структура:\n\n${structure}\n\n` +
+          `⏳ Страница автоматически обновится через 1 секунду...`
       );
+
+      // Автоматическая перезагрузка страницы через 1 секунду
+      setTimeout(async () => {
+        try {
+          const tab = await getCurrentTab();
+          if (tab && tab.id) {
+            // Используем chrome.scripting для совместимости с Manifest V3
+            await chrome.scripting.executeScript({
+              target: { tabId: tab.id },
+              func: () => window.location.reload(),
+            });
+            console.log(
+              "🔄 Page reloaded automatically after successful generation"
+            );
+          }
+        } catch (error) {
+          console.warn("⚠️ Could not reload page automatically:", error);
+          // Fallback к chrome.tabs.reload
+          try {
+            const tab = await getCurrentTab();
+            if (tab && tab.id) {
+              chrome.tabs.reload(tab.id);
+            }
+          } catch (fallbackError) {
+            console.warn("⚠️ Fallback reload also failed:", fallbackError);
+          }
+        }
+      }, 1000);
     } catch (error) {
       console.error("❌ Generate structure error:", error);
       alert("❌ Ошибка: " + error.message);
