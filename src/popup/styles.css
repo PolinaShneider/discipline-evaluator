@@ -1,0 +1,237 @@
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    padding: 16px;
+    width: 320px;
+    background-color: #f9f9f9;
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+h3 {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+}
+
+input,
+textarea {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #555;
+}
+
+textarea {
+    height: 80px;
+    resize: vertical;
+}
+
+/* Базовые стили кнопок - фирменные цвета ITMO */
+button {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    background-color: #2B5CE6;
+    /* Фирменный синий ITMO */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    background-color: #1A4DBB;
+    /* Темно-синий ITMO при hover */
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:disabled,
+button.disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    opacity: 0.6;
+}
+
+button:disabled:hover,
+button.disabled:hover {
+    background-color: #ccc !important;
+    transform: none !important;
+}
+
+/* Специальные кнопки - цветовая дифференциация */
+.btn-primary {
+    background-color: #E91E63;
+    /* Генерация структуры - розовый */
+}
+
+.btn-primary:hover {
+    background-color: #C2185B;
+    /* Темно-розовый при hover */
+}
+
+.btn-secondary {
+    background-color: #0679ED;
+    /* Оценить - яркий синий */
+}
+
+.btn-secondary:hover {
+    background-color: #0561C4;
+    /* Более темный яркий синий при hover */
+}
+
+.btn-info {
+    background-color: #1846C7;
+    /* Найти похожие - темно-синий */
+}
+
+.btn-info:hover {
+    background-color: #1339A3;
+    /* Более темно-синий при hover */
+}
+
+.btn-settings {
+    background-color: #6c757d;
+    /* Настройки - серый */
+}
+
+.btn-settings:hover {
+    background-color: #5a6268;
+    /* Темно-серый при hover */
+}
+
+.btn-debug {
+    background-color: #A509FE;
+    /* Фиолетовый для отладки */
+}
+
+.btn-debug:hover {
+    background-color: #8A07D4;
+    /* Темно-фиолетовый при hover */
+}
+
+pre {
+    background: #f8f9fa;
+    padding: 12px;
+    font-size: 13px;
+    font-family: ui-monospace, 'SF Mono', Monaco, monospace;
+    white-space: pre-wrap;
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+    margin: 8px 0;
+}
+
+/* Информационные блоки */
+.user-info {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.section-divider {
+    margin: 20px 0;
+    border: none;
+    height: 1px;
+    background: #e9ecef;
+}
+
+/* Скрытые элементы */
+.hidden {
+    display: none !important;
+}
+
+/* Контейнер результатов */
+.result-container {
+    margin-top: 20px;
+}
+
+.result-container h4 {
+    margin: 16px 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.metrics-table {
+    font-size: 13px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+
+.advice-list {
+    padding-left: 16px;
+    font-size: 13px;
+    margin: 0;
+}
+
+ul li:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+/* Стили для метрик */
+.metric-good {
+    background-color: #d4edda;
+    color: #155724;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.metric-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.metric-bad {
+    background-color: #f8d7da;
+    color: #721c24;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* Специальные кнопки */
+.add-section {
+    background-color: #125AD6;
+}
+
+.add-section:hover {
+    background-color: #0d4da1;
+}

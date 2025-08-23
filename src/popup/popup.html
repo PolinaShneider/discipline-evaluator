@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Discipline Evaluator</title>
+    <link rel="stylesheet" href="styles.css" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <!-- ✅ Google Analytics (gtag) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XE8K3XVTBL"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+
+        gtag('js', new Date());
+        gtag('config', 'G-XE8K3XVTBL'); 
+    </script>
+</head>
+
+<body>
+    <div id="userIdDisplay" class="user-info">
+        🔐 user_id: <span id="userIdValue">—</span>
+    </div>
+
+    <h3>Разработка дисциплины</h3>
+
+    <button id="generateStructureBtn" class="btn-primary">Сгенерировать структуру</button>
+
+    <label for="referenceIdInput">ID эталонной дисциплины (необязательно):</label>
+    <input type="text" id="referenceIdInput" placeholder="например, 12345" />
+
+    <button id="evaluateBtn" class="btn-secondary">Оценить</button>
+    <button id="createBtn" class="add-section hidden">➕ Создать раздел</button>
+    <button id="findSimilarBtn" class="btn-info">Найти похожие дисциплины</button>
+    <pre id="similarOutput"></pre>
+
+    <button id="settingsBtn" class="btn-settings">⚙️ Настройки</button>
+    <button id="debugBtn" class="btn-debug">🔍 Отладка</button>
+
+
+
+
+    <pre id="output"></pre>
+
+    <div id="resultContainer" class="result-container hidden">
+        <h4>📊 Метрики</h4>
+        <table id="metricsTable" class="metrics-table"></table>
+
+        <h4>💡 Советы</h4>
+        <ul id="adviceList" class="advice-list"></ul>
+    </div>
+
+
+    <script type="module" src="popup.js"></script>
+</body>
+
+</html>
