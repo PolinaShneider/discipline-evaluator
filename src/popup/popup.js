@@ -31,6 +31,69 @@ const DEFAULT_THRESHOLDS = {
   final_score: 0.6,
 };
 
+// Check if current tab is on ITMO domain with discipline page
+async function checkItmoPage() {
+  try {
+    const tab = await getCurrentTab();
+    const url = tab?.url || "";
+
+    // Use existing helper functions
+    const isItmoDomain = /my\.itmo\.(ru|su)/.test(url);
+    const isProgramsPage = isItmoProgramsPage(url);
+    const isChaptersPage = isItmoChaptersPage(url);
+
+    return {
+      isValid: isChaptersPage, // Must be on chapters page specifically
+      url,
+      domain: isItmoDomain,
+      disciplinePage: isProgramsPage,
+      chaptersPage: isChaptersPage,
+    };
+  } catch (error) {
+    console.error("Error checking ITMO page:", error);
+    return {
+      isValid: false,
+      url: "",
+      domain: false,
+      disciplinePage: false,
+      chaptersPage: false,
+    };
+  }
+}
+
+// Update button states based on current page
+function updateButtonStates(pageCheck, buttons) {
+  const { isValid, domain, disciplinePage, chaptersPage } = pageCheck;
+
+  // Main action buttons that require ITMO discipline page
+  const mainButtons = [
+    buttons.generateStructureBtn,
+    buttons.evaluateBtn,
+    buttons.findSimilarBtn,
+  ];
+
+  mainButtons.forEach((btn) => {
+    if (btn) {
+      btn.disabled = !isValid;
+      if (isValid) {
+        btn.classList.remove("disabled");
+        btn.title = "";
+      } else {
+        btn.classList.add("disabled");
+        if (!domain) {
+          btn.title =
+            "Доступно только на сайте ITMO (my.itmo.ru или my.itmo.su)";
+        } else if (!disciplinePage) {
+          btn.title = "Доступно только на странице дисциплины (/programs/...)";
+        } else if (!chaptersPage) {
+          btn.title =
+            "Перейдите на вкладку 'Разделы' (добавьте ?p=chapters к URL)";
+        }
+      }
+    }
+  });
+}
+
 function getMetricClass(key, value) {
   const threshold = DEFAULT_THRESHOLDS[key] ?? 0.5;
 
@@ -153,6 +216,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Hide debug button by default if can't load settings
     debugBtn.classList.add("hidden");
   }
+
+  // Check current page and update button states
+  const pageCheck = await checkItmoPage();
+  const buttons = {
+    generateStructureBtn,
+    evaluateBtn: evaluateBtn,
+    findSimilarBtn,
+  };
+
+  updateButtonStates(pageCheck, buttons);
+
+  console.log("🌐 Page check:", pageCheck);
 
   // Find similar programs button
   findSimilarBtn.addEventListener("click", async () => {

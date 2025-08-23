@@ -71,10 +71,18 @@ button:active {
     transform: translateY(0);
 }
 
-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    transform: none;
+button:disabled,
+button.disabled {
+    background-color: #ccc !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    opacity: 0.6;
+}
+
+button:disabled:hover,
+button.disabled:hover {
+    background-color: #ccc !important;
+    transform: none !important;
 }
 
 /* Специальные кнопки */

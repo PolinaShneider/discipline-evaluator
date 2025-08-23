@@ -3,7 +3,7 @@
   "name": "ITMO Discipline Evaluator",
   "version": "1.0",
   "description": "Оценивает структуру дисциплины через API",
-  "permissions": ["storage", "scripting", "activeTab", "cookies"],
+  "permissions": ["storage", "scripting", "activeTab", "tabs", "cookies"],
   "host_permissions": [
     "https://dev.my.itmo.su/*",
     "https://my.itmo.ru/*",
