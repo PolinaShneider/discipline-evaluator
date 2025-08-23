@@ -1,5 +1,5 @@
-import { ENDPOINT } from "./config.js";
-import { getBaseUrl, parseJwt } from "./utils.js";
+import { ENDPOINT } from "../constants/config.js";
+import { getBaseUrl, parseJwt } from "../utils/utils.js";
 
 async function fetchDisciplineStructure(disciplineId, token) {
   const baseUrl = getBaseUrl();
