@@ -183,10 +183,11 @@ class OptionsManager {
       this.showStatus("Ошибка сброса настроек", "error");
     }
   }
-
   validateOpenAIKey(key) {
-    // OpenAI keys start with 'sk-' and have specific length
-    return /^sk-[a-zA-Z0-9]{48,}$/.test(key);
+    // Допустимы два формата: старый "sk-" и новый "sk-proj-"
+    const oldFormat = /^sk-[a-zA-Z0-9]{48,}$/;
+    const newFormat = /^sk-proj-[a-zA-Z0-9\-_]{80,}$/; // допускаем длинные ключи с дефисами и _
+    return oldFormat.test(key) || newFormat.test(key);
   }
 
   showStatus(message, type = "success") {
